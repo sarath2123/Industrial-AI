@@ -1,0 +1,39 @@
+system:
+  camera_source: 0          # 0 for webcam, or "rtsp://..." for IP camera
+  plc_ip: "localhost"
+  plc_port: 5020
+
+agents:
+  ppe_safety:
+    enabled: true
+
+    # Zone format: [x1, y1, x2, y2]
+    # For a 640x480 webcam (mirrored), this covers the centre of the frame.
+    # Run diagnose_ppe.py first to find coordinates that match your camera angle.
+    #
+    # Current zone covers roughly the middle-left third of a 640x480 frame:
+    #   Old zone [400, 100, 620, 400] was far-right and only 220px wide — easy to miss.
+    #   New zone [100, 80, 540, 460] covers most of the frame for testing.
+    #   Narrow it down once you confirm detection is working.
+    zone: [100, 80, 540, 460]
+
+    model_path: "models/best.pt"
+
+    risk_thresholds:
+      caution: 25
+      warning: 45
+      stop: 65
+
+  conveyor_analytics:
+    enabled: true
+    roi_line_y: 300
+    target_classes: [39, 41, 28]   # COCO: bottle=39, cup=41, handbag=26 / backpack=24 / box≈28
+    model_path: "models/yolo11n.pt"
+    jam_threshold: 2.0
+
+  thermal_hotspot:
+    enabled: false
+    temp_threshold: 80             # Degrees Celsius
+
+  fire_smoke:
+    enabled: false
